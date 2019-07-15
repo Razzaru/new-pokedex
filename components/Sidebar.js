@@ -1,5 +1,8 @@
 import {menu} from "../constants/menu";
 import Link from "next/link";
+import {compose} from "recompose";
+import {connect} from 'react-redux';
+import capitalizeFirstLetter from "../helpers";
 
 const Sidebar = props => (
     <aside className="menu">
@@ -10,9 +13,25 @@ const Sidebar = props => (
             <p className="menu-label">
                 Pokedex Menu
             </p>
-            {menu.map(menuItem => <li><Link href={menuItem.route}><a className={menuItem.id === props.activePage ? 'is-active' : ''}>{menuItem.name}</a></Link></li>)}
+            {menu.map(menuItem => {
+                if (menuItem.id === 'generations') {
+                    return (
+                        <li>
+                            <a>{menuItem.name}</a>
+                            <ul>
+                                {props.generations.map(generation => <li><Link href="/generations/[name]" as={`/generations/${generation.name}`}><a
+                                    className={menuItem.id === props.activePage ? 'is-active' : ''}>{capitalizeFirstLetter(generation.name)}</a></Link></li>)}
+                            </ul>
+                        </li>
+                    );
+                } else {
+                    return <li><Link href={menuItem.route}><a
+                        className={menuItem.id === props.activePage ? 'is-active' : ''}>{menuItem.name}</a></Link></li>;
+                }
+            })}
         </ul>
     </aside>
 );
 
-export default Sidebar
+const mapStateToProps = ({generations}) => ({generations});
+export default compose(connect(mapStateToProps))(Sidebar)

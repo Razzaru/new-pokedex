@@ -5,7 +5,9 @@ export const exampleInitialState = {
     page: 1,
     pokemonList: [],
     pokemonCount: 0,
-    currentPokemon: {}
+    currentPokemon: {},
+    currentName: null,
+    generations: []
 };
 
 function reducer (state = exampleInitialState, action) {
@@ -14,7 +16,7 @@ function reducer (state = exampleInitialState, action) {
             return {
                 ...state,
                 pageCount: action.pageCount,
-                page: action.page
+                page: action.page || 1
             };
         case actionTypes.LOAD_POKEMON_LIST_SUCCESS:
             return {
@@ -22,16 +24,21 @@ function reducer (state = exampleInitialState, action) {
                 pokemonCount: action.pokemonListData.count,
                 pokemonList: action.pokemonListData.results
             };
-        case actionTypes.SET_CURRENT_POKEMON_URL:
+        case actionTypes.SET_CURRENT_POKEMON_NAME:
             return {
                 ...state,
-                url: action.url
+                currentName: action.name
             };
         case actionTypes.LOAD_POKEMON_SUCCESS:
             return {
                 ...state,
                 currentPokemon: action.pokemon,
             };
+        case actionTypes.LOAD_GENERATIONS_SUCCESS:
+            return {
+                ...state,
+                generations: action.generations
+            }
         default:
             return state
     }

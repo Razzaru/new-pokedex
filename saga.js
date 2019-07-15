@@ -1,5 +1,5 @@
-import { all, takeLatest, select, put } from 'redux-saga/effects'
-import {actionTypes, loadPokemonListSuccess, loadPokemonSuccess} from "./actions";
+import { all, takeLatest, select, put, call } from 'redux-saga/effects'
+import {actionTypes, loadPokemonListSuccess, loadPokemonSuccess, loadGenerationsDataSuccess} from "./actions";
 import fetch from 'isomorphic-unfetch';
 
 function* fetchPokemonList() {
@@ -18,7 +18,7 @@ function* fetchPokemon() {
     try {
         const state = yield select();
 
-        const res = yield fetch(state.url);
+        const res = yield fetch(`https://pokeapi.co/api/v2/pokemon/${state.currentName}/`);
         const pokemonData = yield res.json();
         yield put(loadPokemonSuccess(pokemonData))
     } catch (err) {
@@ -26,8 +26,20 @@ function* fetchPokemon() {
     }
 }
 
+function* fetchGenerations() {
+    try {
+        const res = yield fetch(`https://pokeapi.co/api/v2/generation/`);
+        const generationsData = yield res.json();
+
+        yield put(loadGenerationsDataSuccess(generationsData.results))
+    } catch (err) {
+        console.log(error)
+    }
+}
+
 function* rootSaga() {
     yield all([
+        call(fetchGenerations),
         takeLatest(actionTypes.FETCH_POKEMON_LIST, fetchPokemonList),
         takeLatest(actionTypes.FETCH_POKEMON, fetchPokemon),
     ]);

@@ -6,6 +6,7 @@ import Pagination from "../components/Pagination";
 import {pageCount} from "../constants/lists";
 import {connect} from 'react-redux';
 import {setInitialInfo, startPokemonListFetching} from '../actions';
+import capitalizeFirstLetter from "../helpers";
 
 class Index extends React.Component {
     static async getInitialProps (props) {
@@ -18,19 +19,14 @@ class Index extends React.Component {
         };
     }
 
-    componentWillUpdate(nextProps) {
-        if (nextProps.query.page !== this.props.query.page) {
-        }
-    }
-
     render() {
         return (
-            <Layout activePage="pokemon-list">
+            <Layout activePage="pokemon-list" >
                 <div className="list is-hoverable">
-                    {this.props.pokemonList.map(pokemon => (
-                        <Link href={`/pokemon?url=${pokemon.url}`}>
+                    {this.props.pokemonList.map((pokemon) => (
+                        <Link href="/pokemon/[name]" as={`/pokemon/${pokemon.name}`}>
                             <a className="list-item">
-                                {pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)}
+                                {capitalizeFirstLetter(pokemon.name)}
                             </a>
                         </Link>
                     ))}

@@ -31,7 +31,7 @@ export const menu = [
     },
     {
         name: "Generations",
-        id: "6",
+        id: "generations",
         route: '/generations'
     }
 ];
