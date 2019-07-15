@@ -1,30 +1,32 @@
+import React from 'react'
 import '../styles/styles.scss'
 import Layout from "../components/Layout";
-import fetch from 'isomorphic-unfetch';
+import {connect} from 'react-redux';
+import {setCurrentPokemonUrl, startCurrentPokemonFetching} from "../actions";
 
-const Pokemon = props => {
-    return (
-        <Layout activePage="pokemon-list">
-            <div style={{display: 'flex'}}>
-                {Object.values(props.pokemon.sprites).filter(sprite => sprite).map(sprite => (
+class Pokemon extends React.Component {
+    static async getInitialProps (props) {
+        const {store, query} = props.ctx;
+
+        store.dispatch(setCurrentPokemonUrl(query.url));
+        store.dispatch(startCurrentPokemonFetching());
+    }
+
+    render() {
+        return (
+            <Layout activePage="pokemon-list">
+                <div style={{display: 'flex'}}>
+                    {this.props.currentPokemon && Object.values(this.props.currentPokemon.sprites || []).filter(sprite => sprite).map(sprite => (
                         <figure className="image is-128x128" style={{border: '1px solid rgba(0,0,0,0.3)', margin: '5px'}}>
                             <img src={sprite}/>
                         </figure>
-                ))}
-            </div>
-        </Layout>
-    )
-};
+                    ))}
+                </div>
+            </Layout>
+        );
+    }
+}
 
-Pokemon.getInitialProps = async function (ctx) {
-    const res = await fetch(ctx.query.url);
-    const data = await res.json();
+const mapStateToProps = ({ currentPokemon }) => ({ currentPokemon });
+export default connect(mapStateToProps)(Pokemon)
 
-    console.log(data);
-
-    return {
-        pokemon: data
-    };
-};
-
-export default Pokemon;
